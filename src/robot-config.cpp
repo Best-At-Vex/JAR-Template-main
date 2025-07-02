@@ -7,12 +7,15 @@ using code = vision::code;
 // A global instance of brain used for printing to the V5 Brain screen.
 brain  Brain;
 
-motor leftTop = motor(PORT3, false);
+motor leftTop = motor(PORT3, true);
 motor leftMiddle = motor(PORT2, true);
-motor leftBottom = motor(PORT1, true);
+motor leftBottom = motor(PORT1, false);
 motor rightTop = motor(PORT6, false);
-motor rightMiddle = motor(PORT5, true);
-motor rightBottom = motor(PORT4, false);
+motor rightMiddle = motor(PORT5, false);
+motor rightBottom = motor(PORT4, true);
+
+vex::optical optical_sensor(PORT11);
+vex::inertial inertial(PORT21);
 
 motor topIntake = motor(PORT10, false);
 motor bottomIntake = motor(PORT11, false);

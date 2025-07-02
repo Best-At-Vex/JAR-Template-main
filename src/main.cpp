@@ -38,7 +38,7 @@ Drive chassis(
 //HOLONOMIC_TWO_ROTATION
 //
 //Write it here:
-ZERO_TRACKER_NO_ODOM,
+TANK_TWO_ROTATION,
 
 //Add the names of your Drive motors into the motor groups below, separated by commas, i.e. motor_group(Motor1,Motor2,Motor3).
 //You will input whatever motor names you chose when you configured your robot using the sidebar configurer, they don't have to be "Motor1" and "Motor2".
@@ -50,15 +50,15 @@ motor_group(leftTop, leftMiddle, leftBottom),
 motor_group(rightTop, rightMiddle, rightBottom),
 
 //Specify the PORT NUMBER of your inertial sensor, in PORT format (i.e. "PORT1", not simply "1"):
-PORT1,
+PORT21,
 
 //Input your wheel diameter. (4" omnis are actually closer to 4.125"):
-2.75,
+3.25,
 
 //External ratio, must be in decimal, in the format of input teeth/output teeth.
 //If your motor has an 84-tooth gear and your wheel has a 60-tooth gear, this value will be 1.4.
 //If the motor drives the wheel directly, this value is 1:
-0.444,
+0.75,
 
 //Gyro scale, this is what your gyro reads when you spin the robot 360 degrees.
 //For most cases 360 will do fine here, but this scale factor can be very helpful when precision is necessary.
@@ -84,21 +84,21 @@ PORT3,     -PORT4,
 //If you are using position tracking, this is the Forward Tracker port (the tracker which runs parallel to the direction of the chassis).
 //If this is a rotation sensor, enter it in "PORT1" format, inputting the port below.
 //If this is an encoder, enter the port as an integer. Triport A will be a "1", Triport B will be a "2", etc.
-PORT3,
+PORT9,
 
 //Input the Forward Tracker diameter (reverse it to make the direction switch):
-2.75,
+-2.75,
 
 //Input Forward Tracker center distance (a positive distance corresponds to a tracker on the right side of the robot, negative is left.)
 //For a zero tracker tank drive with odom, put the positive distance from the center of the robot to the right side of the drive.
 //This distance is in inches:
--2,
+0,
 
 //Input the Sideways Tracker Port, following the same steps as the Forward Tracker Port:
-PORT1,
+PORT10,
 
 //Sideways tracker diameter (reverse to make the direction switch):
--2,
+2,
 
 //Sideways tracker center distance (positive distance is behind the center of the robot, negative is in front):
 0
@@ -107,6 +107,20 @@ PORT1,
 
 int current_auton_selection = 0;
 bool auto_started = false;
+
+// void blue_color_sort(){
+//   while (true){
+//     if (optical_sensor.color() == red){
+//       //do something, intake or piston or something
+//     }
+//   }
+// }
+
+// void red_color_sort(){
+//   if (optical_sensor.color() == blue){
+//     //do something, intake or piston or other
+//   }
+// }
 
 /**
  * Function before autonomous. It prints the current auton number on the screen
@@ -175,10 +189,10 @@ void autonomous(void) {
   auto_started = true;
   switch(current_auton_selection){ 
     case 0:
-      drive_test();
+      odom_test();
       break;
     case 1:         
-      drive_test();
+      tank_odom_test();
       break;
     case 2:
       turn_test();
@@ -201,6 +215,9 @@ void autonomous(void) {
  }
 }
 
+
+
+
 /*---------------------------------------------------------------------------*/
 /*                                                                           */
 /*                              User Control Task                            */
@@ -217,6 +234,7 @@ void usercontrol(void) {
     // This is the main execution loop for the user control program.
     // Each time through the loop your program should update motor + servo
     // values based on feedback from the joysticks.
+    
 
     // Code for the intake
 
@@ -259,6 +277,10 @@ int main() {
 
   // Prevent main from exiting with an infinite loop.
   while (true) {
+
+
+    
+
     wait(100, msec);
   }
 }

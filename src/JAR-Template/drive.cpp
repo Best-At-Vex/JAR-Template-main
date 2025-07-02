@@ -303,6 +303,17 @@ void Drive::drive_distance(float distance, float heading, float drive_max_voltag
   drive_distance(distance, heading, drive_max_voltage, heading_max_voltage, drive_settle_error, drive_settle_time, drive_timeout, drive_kp, drive_ki, drive_kd, drive_starti, heading_kp, heading_ki, heading_kd, heading_starti);
 }
 
+float previous_drive_output = 0;
+float previous_heading_output = 0;
+float slew_rate = .5;
+
+float apply_slew(float target, float previous, float rate){
+  float delta = target-previous;
+  if (delta>rate) delta=rate;
+  else if (delta < -rate) delta = -rate;
+  return previous + delta;
+}
+
 void Drive::drive_distance(float distance, float heading, float drive_max_voltage, float heading_max_voltage, float drive_settle_error, float drive_settle_time, float drive_timeout, float drive_kp, float drive_ki, float drive_kd, float drive_starti, float heading_kp, float heading_ki, float heading_kd, float heading_starti){
   PID drivePID(distance, drive_kp, drive_ki, drive_kd, drive_starti, drive_settle_error, drive_settle_time, drive_timeout);
   PID headingPID(reduce_negative_180_to_180(heading - get_absolute_heading()), heading_kp, heading_ki, heading_kd, heading_starti);
@@ -312,13 +323,19 @@ void Drive::drive_distance(float distance, float heading, float drive_max_voltag
     average_position = (get_left_position_in()+get_right_position_in())/2.0;
     float drive_error = distance+start_average_position-average_position;
     float heading_error = reduce_negative_180_to_180(heading - get_absolute_heading());
-    float drive_output = drivePID.compute(drive_error);
-    float heading_output = headingPID.compute(heading_error);
+    float raw_drive_output = drivePID.compute(drive_error);
+    float raw_heading_output = headingPID.compute(heading_error);
 
-    drive_output = clamp(drive_output, -drive_max_voltage, drive_max_voltage);
-    heading_output = clamp(heading_output, -heading_max_voltage, heading_max_voltage);
+    raw_drive_output = clamp(raw_drive_output, -drive_max_voltage, drive_max_voltage);
+    raw_heading_output = clamp(raw_heading_output, -heading_max_voltage, heading_max_voltage);
+
+    float drive_output = apply_slew(raw_drive_output, previous_drive_output, slew_rate);
+    float heading_output = apply_slew(raw_heading_output, previous_heading_output, slew_rate);
 
     drive_with_voltage(drive_output+heading_output, drive_output-heading_output);
+
+    previous_drive_output = drive_output;
+    previous_heading_output = heading_output;
     task::sleep(10);
   }
 }

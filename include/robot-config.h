@@ -16,9 +16,12 @@ extern motor leftBottom;
 extern motor rightTop;
 extern motor rightMiddle;
 extern motor rightBottom;
+extern optical optical_sensor;
+
 
 extern motor topIntake;
 extern motor bottomIntake;
+
 
 
 
